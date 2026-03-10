@@ -70,7 +70,7 @@ export function CityGrid({ cities }: CityGridProps) {
                 animationFillMode: "both",
               }}
             >
-              <CityCard city={city} onClick={() => {}} />
+              <CityCard city={city} />
             </div>
           ))}
         </div>
