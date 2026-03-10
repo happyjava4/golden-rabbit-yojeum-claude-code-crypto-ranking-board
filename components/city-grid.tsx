@@ -1,84 +1,67 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { City, Region, SortOption } from "@/types/city";
+import { City, Budget, Region, Environment, BestSeason } from "@/types/city";
 import { FilterBar } from "./filter-bar";
 import { CityCard } from "./city-card";
-import { CityModal } from "./city-modal";
 
 interface CityGridProps {
   cities: City[];
 }
 
 export function CityGrid({ cities }: CityGridProps) {
+  // 새로운 필터 상태 관리
+  const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<Region>("전체");
-  const [sortOption, setSortOption] = useState<SortOption>("nomadScore");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEnvironments, setSelectedEnvironments] = useState<Environment[]>([]);
+  const [selectedSeason, setSelectedSeason] = useState<BestSeason | null>(null);
 
-  // 필터링 및 정렬 로직
-  const filteredAndSortedCities = useMemo(() => {
+  // 필터링 로직 - AND 조건 (환경은 OR 조건)
+  const filteredCities = useMemo(() => {
     let result = [...cities];
+
+    // 예산 필터
+    if (selectedBudget !== null) {
+      result = result.filter((city) => city.budget === selectedBudget);
+    }
 
     // 지역 필터
     if (selectedRegion !== "전체") {
       result = result.filter((city) => city.region === selectedRegion);
     }
 
-    // 정렬
-    switch (sortOption) {
-      case "nomadScore":
-        result.sort((a, b) => b.nomadScore - a.nomadScore);
-        break;
-      case "costLow":
-        result.sort((a, b) => b.cost - a.cost); // cost가 높을수록 저렴함
-        break;
-      case "internetFast":
-        result.sort((a, b) => b.internet - a.internet);
-        break;
-      case "cafeRich":
-        result.sort((a, b) => b.cafe - a.cafe);
-        break;
-      case "reviewsMany":
-        result.sort((a, b) => b.reviews - a.reviews);
-        break;
+    // 환경 필터 (OR 조건 - 하나라도 일치하면 표시)
+    if (selectedEnvironments.length > 0) {
+      result = result.filter((city) =>
+        city.environment.some((env) => selectedEnvironments.includes(env))
+      );
+    }
+
+    // 계절 필터
+    if (selectedSeason !== null) {
+      result = result.filter((city) => city.bestSeason === selectedSeason);
     }
 
     return result;
-  }, [cities, selectedRegion, sortOption]);
-
-  const handleCityClick = (city: City) => {
-    setSelectedCity(city);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => setSelectedCity(null), 300);
-  };
+  }, [cities, selectedBudget, selectedRegion, selectedEnvironments, selectedSeason]);
 
   return (
     <>
       <FilterBar
+        selectedBudget={selectedBudget}
+        onBudgetChange={setSelectedBudget}
         selectedRegion={selectedRegion}
         onRegionChange={setSelectedRegion}
-        sortOption={sortOption}
-        onSortChange={setSortOption}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        resultCount={filteredAndSortedCities.length}
+        selectedEnvironments={selectedEnvironments}
+        onEnvironmentsChange={setSelectedEnvironments}
+        selectedSeason={selectedSeason}
+        onSeasonChange={setSelectedSeason}
+        resultCount={filteredCities.length}
       />
 
       <section className="container mx-auto px-4 py-8">
-        <div
-          className={`grid gap-6 ${
-            viewMode === "grid"
-              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-              : "grid-cols-1"
-          }`}
-        >
-          {filteredAndSortedCities.map((city, index) => (
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {filteredCities.map((city, index) => (
             <div
               key={city.id}
               className="animate-fadeIn"
@@ -87,21 +70,19 @@ export function CityGrid({ cities }: CityGridProps) {
                 animationFillMode: "both",
               }}
             >
-              <CityCard city={city} onClick={() => handleCityClick(city)} />
+              <CityCard city={city} onClick={() => {}} />
             </div>
           ))}
         </div>
 
-        {filteredAndSortedCities.length === 0 && (
+        {filteredCities.length === 0 && (
           <div className="py-20 text-center">
-            <p className="text-xl text-[rgb(var(--dim))]">
-              해당 지역에 도시가 없습니다.
+            <p className="text-xl font-mono text-[rgb(var(--text-secondary))]">
+              검색 결과가 없습니다.
             </p>
           </div>
         )}
       </section>
-
-      <CityModal city={selectedCity} isOpen={isModalOpen} onClose={handleCloseModal} />
     </>
   );
 }
