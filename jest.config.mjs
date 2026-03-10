@@ -1,16 +1,17 @@
-import { pathsToModuleNameMapper } from '@unrs/resolver';
-import { readFileSync } from 'fs';
-
-const tsConfig = JSON.parse(readFileSync('./tsconfig.json', 'utf8'));
-
 const config = {
   preset: 'ts-jest',
   testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths || {}, { prefix: '<rootDir>/' }),
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+  },
   testMatch: [
     '**/__tests__/**/*.{js,jsx,ts,tsx}',
     '**/*.{spec,test}.{js,jsx,ts,tsx}'
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/'
   ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -21,12 +22,18 @@ const config = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverageFrom: [
-    '**/*.{js,jsx,ts,tsx}',
+    'crypto-ranking-board.tsx',
+    'app/page.tsx',
+    'lib/utils.ts',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/.next/**',
     '!**/coverage/**',
-    '!**/jest.config.mjs'
+    '!**/jest.config.mjs',
+    '!**/jest.setup.js',
+    '!**/next.config.mjs',
+    '!**/tailwind.config.ts',
+    '!**/postcss.config.mjs'
   ]
 };
 
