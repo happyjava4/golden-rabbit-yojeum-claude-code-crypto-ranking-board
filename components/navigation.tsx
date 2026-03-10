@@ -13,19 +13,23 @@ export function Navigation() {
         </Link>
 
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hidden sm:inline-flex text-[rgb(var(--text))] hover:text-[rgb(var(--green))] hover:bg-[rgb(var(--panel))]"
-          >
-            로그인
-          </Button>
-          <Button
-            size="sm"
-            className="bg-[rgb(var(--green))] text-[rgb(var(--bg))] hover:bg-[rgb(var(--green-dim))] font-bold"
-          >
-            무료 가입
-          </Button>
+          <Link href="/login">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden sm:inline-flex text-[rgb(var(--text))] hover:text-[rgb(var(--green))] hover:bg-[rgb(var(--panel))]"
+            >
+              로그인
+            </Button>
+          </Link>
+          <Link href="/register">
+            <Button
+              size="sm"
+              className="bg-[rgb(var(--green))] text-[rgb(var(--bg))] hover:bg-[rgb(var(--green-dim))] font-bold"
+            >
+              무료 가입
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>
