@@ -2,74 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 워케이션 코리아 - 터미널 테마 */
+/* Agent 4: Warm Gradient Theme - Cozy & Inviting */
 @layer base {
   :root {
-    /* 터미널 컬러 팔레트 */
-    --green: 136 255 136; /* #00ff88 - 메인 포인트 */
-    --green-dim: 0 170 85; /* #00aa55 - 보조 그린 */
-    --amber: 255 176 0; /* #ffb000 - 가격/별점 강조 */
-    --cyan: 0 255 238; /* #00ffee - 보조 강조 */
-    --red: 255 68 68; /* #ff4444 - 오류/단점 */
-    --bg: 5 14 8; /* #050e08 - 배경 */
-    --panel: 7 15 10; /* #070f0a - 카드 배경 */
-    --border: 26 74 42; /* #1a4a2a - 테두리 */
-    --text: 176 255 204; /* #b0ffcc - 본문 텍스트 */
-    --dim: 58 106 74; /* #3a6a4a - 보조 텍스트 */
+    /* Warm 컬러 */
+    --green: 249 115 22; /* 오렌지 */
+    --green-dim: 234 88 12;
+    --amber: 251 146 60;
+    --cyan: 253 186 116;
+    --red: 239 68 68;
+    --bg: 254 243 230; /* 따뜻한 베이지 */
+    --panel: 255 251 247;
+    --border: 253 214 177;
+    --text: 124 58 23;
+    --dim: 180 83 9;
 
-    /* Shadcn 변수 매핑 */
-    --background: var(--bg);
-    --foreground: var(--text);
-    --card: var(--panel);
-    --card-foreground: var(--text);
-    --popover: var(--panel);
-    --popover-foreground: var(--text);
-    --primary: var(--green);
-    --primary-foreground: var(--bg);
-    --secondary: var(--dim);
-    --secondary-foreground: var(--text);
-    --muted: var(--dim);
-    --muted-foreground: var(--text);
-    --accent: var(--cyan);
-    --accent-foreground: var(--bg);
-    --destructive: var(--red);
-    --destructive-foreground: var(--text);
-    --border: var(--border);
-    --input: var(--border);
-    --ring: var(--green);
-    --radius: 0.25rem;
+    --background: 254 243 230;
+    --foreground: 124 58 23;
+    --card: 255 251 247;
+    --card-foreground: 124 58 23;
+    --popover: 255 251 247;
+    --popover-foreground: 124 58 23;
+    --primary: 249 115 22;
+    --primary-foreground: 255 255 255;
+    --secondary: 253 214 177;
+    --secondary-foreground: 124 58 23;
+    --muted: 253 214 177;
+    --muted-foreground: 180 83 9;
+    --accent: 249 115 22;
+    --accent-foreground: 255 255 255;
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+    --border: 253 214 177;
+    --input: 253 214 177;
+    --ring: 249 115 22;
+    --radius: 1rem;
   }
 }
 
 @layer base {
   * {
-    @apply border-[rgb(var(--border))];
+    @apply border-orange-200;
   }
 
   body {
-    @apply bg-[rgb(var(--bg))] text-[rgb(var(--text))];
-    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
-    position: relative;
-  }
-
-  /* CRT 스캔라인 효과 */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.08) 2px,
-      rgba(0, 0, 0, 0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
+    @apply bg-orange-50 text-orange-950;
+    font-family: 'Georgia', 'Palatino', serif;
+    background: linear-gradient(135deg, #fef3e2 0%, #fff7ed 50%, #fed7aa 100%);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply text-[rgb(var(--green))];
+    @apply text-orange-600;
+    font-weight: 700;
   }
 
   /* 애니메이션 */
