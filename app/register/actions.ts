@@ -16,31 +16,40 @@ export async function signup(formData: FormData) {
 
   // Validate input
   if (!name || !email || !password || !confirmPassword) {
+    console.error('Signup failed: Missing required fields')
     return
   }
 
   if (password !== confirmPassword) {
+    console.error('Signup failed: Passwords do not match')
     return
   }
 
   if (password.length < 6) {
+    console.error('Signup failed: Password too short')
     return
   }
 
   // Attempt to sign up
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         name,
       },
+      // 이메일 확인 없이 자동 로그인 (개발 환경)
+      emailRedirectTo: undefined,
     },
   })
 
   if (error) {
+    console.error('Signup error:', error.message, error.status)
     return
   }
+
+  console.log('Signup successful for user:', data.user?.email)
+  console.log('Email confirmation required:', data.user?.email_confirmed_at === null)
 
   // Redirect to login page on success
   redirect('/login')

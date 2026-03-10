@@ -14,18 +14,22 @@ export async function login(formData: FormData) {
 
   // Validate input
   if (!email || !password) {
+    console.error('Login failed: Email or password missing')
     return
   }
 
   // Attempt to sign in
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
   if (error) {
+    console.error('Login error:', error.message, error.status)
     return
   }
+
+  console.log('Login successful for user:', data.user?.email)
 
   // Redirect to home page on success
   redirect('/')
