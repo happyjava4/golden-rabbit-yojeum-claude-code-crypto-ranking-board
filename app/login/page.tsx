@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { login } from "./actions";
 
 export default function LoginPage() {
   return (
@@ -50,82 +51,73 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-[rgb(var(--text))]">
-              이메일
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="example@workcation.kr"
-              className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-[rgb(var(--text))]">
-              비밀번호
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2 text-[rgb(var(--text))]">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-[rgb(var(--border))] bg-[rgb(var(--bg))]"
+        <form action={login}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-[rgb(var(--text))]">
+                이메일
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="example@workcation.kr"
+                className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
               />
-              로그인 상태 유지
-            </label>
-            <Link
-              href="/forgot-password"
-              className="text-[rgb(var(--cyan))] hover:text-[rgb(var(--green))] transition-colors"
-            >
-              비밀번호 찾기
-            </Link>
-          </div>
-
-          <Button
-            className="w-full bg-[rgb(var(--green))] text-[rgb(var(--bg))] hover:bg-[rgb(var(--green-dim))] font-bold"
-            size="lg"
-          >
-            [ LOGIN ]
-          </Button>
-
-          {/* 구분선 */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-[rgb(var(--border))]" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[rgb(var(--panel))] px-2 text-[rgb(var(--dim))]">
-                또는
-              </span>
-            </div>
-          </div>
 
-          {/* 소셜 로그인 */}
-          <div className="space-y-2">
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-[rgb(var(--text))]">
+                비밀번호
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="••••••••"
+                className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 text-[rgb(var(--text))]">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-[rgb(var(--border))] bg-[rgb(var(--bg))]"
+                />
+                로그인 상태 유지
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-[rgb(var(--cyan))] hover:text-[rgb(var(--green))] transition-colors"
+              >
+                비밀번호 찾기
+              </Link>
+            </div>
+
             <Button
-              variant="outline"
-              className="w-full border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] hover:bg-[rgb(var(--panel))] hover:text-[rgb(var(--green))]"
+              type="submit"
+              className="w-full bg-[rgb(var(--green))] text-[rgb(var(--bg))] hover:bg-[rgb(var(--green-dim))] font-bold"
+              size="lg"
             >
-              카카오로 로그인
+              [ LOGIN ]
             </Button>
-            <Button
-              variant="outline"
-              className="w-full border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] hover:bg-[rgb(var(--panel))] hover:text-[rgb(var(--green))]"
-            >
-              구글로 로그인
-            </Button>
-          </div>
-        </CardContent>
+
+            {/* 구분선 */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-[rgb(var(--border))]" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-[rgb(var(--panel))] px-2 text-[rgb(var(--dim))]">
+                  소셜 로그인 (준비중)
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </form>
 
         <CardFooter className="flex flex-col gap-2 border-t border-[rgb(var(--border))] pt-4">
           <p className="text-center text-sm text-[rgb(var(--text))]">

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { signup } from "./actions";
 
 export default function RegisterPage() {
   return (
@@ -50,112 +51,110 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-[rgb(var(--text))]">
-              이름
-            </Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="홍길동"
-              className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-[rgb(var(--text))]">
-              이메일
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="example@workcation.kr"
-              className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-[rgb(var(--text))]">
-              비밀번호
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="8자 이상 입력해주세요"
-              className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password-confirm" className="text-[rgb(var(--text))]">
-              비밀번호 확인
-            </Label>
-            <Input
-              id="password-confirm"
-              type="password"
-              placeholder="비밀번호를 다시 입력해주세요"
-              className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
-            />
-          </div>
-
-          {/* 약관 동의 */}
-          <div className="space-y-2 rounded border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-3">
-            <label className="flex items-start gap-2 text-sm text-[rgb(var(--text))]">
-              <input
-                type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-[rgb(var(--border))]"
+        <form action={signup}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-[rgb(var(--text))]">
+                이름
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="홍길동"
+                className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
               />
-              <span>
-                <span className="text-[rgb(var(--green))]">[필수]</span> 서비스 이용약관 및 개인정보 처리방침에 동의합니다
-              </span>
-            </label>
-            <label className="flex items-start gap-2 text-sm text-[rgb(var(--text))]">
-              <input
-                type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-[rgb(var(--border))]"
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-[rgb(var(--text))]">
+                이메일
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="example@workcation.kr"
+                className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
               />
-              <span>
-                <span className="text-[rgb(var(--dim))]">[선택]</span> 마케팅 정보 수신에 동의합니다
-              </span>
-            </label>
-          </div>
-
-          <Button
-            className="w-full bg-[rgb(var(--green))] text-[rgb(var(--bg))] hover:bg-[rgb(var(--green-dim))] font-bold"
-            size="lg"
-          >
-            [ SIGN UP ]
-          </Button>
-
-          {/* 구분선 */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-[rgb(var(--border))]" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[rgb(var(--panel))] px-2 text-[rgb(var(--dim))]">
-                또는
-              </span>
-            </div>
-          </div>
 
-          {/* 소셜 회원가입 */}
-          <div className="space-y-2">
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-[rgb(var(--text))]">
+                비밀번호
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minLength={6}
+                placeholder="6자 이상 입력해주세요"
+                className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password-confirm" className="text-[rgb(var(--text))]">
+                비밀번호 확인
+              </Label>
+              <Input
+                id="password-confirm"
+                name="confirmPassword"
+                type="password"
+                required
+                minLength={6}
+                placeholder="비밀번호를 다시 입력해주세요"
+                className="border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] placeholder:text-[rgb(var(--dim))]"
+              />
+            </div>
+
+            {/* 약관 동의 */}
+            <div className="space-y-2 rounded border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-3">
+              <label className="flex items-start gap-2 text-sm text-[rgb(var(--text))]">
+                <input
+                  type="checkbox"
+                  required
+                  className="mt-0.5 h-4 w-4 rounded border-[rgb(var(--border))]"
+                />
+                <span>
+                  <span className="text-[rgb(var(--green))]">[필수]</span> 서비스 이용약관 및 개인정보 처리방침에 동의합니다
+                </span>
+              </label>
+              <label className="flex items-start gap-2 text-sm text-[rgb(var(--text))]">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 rounded border-[rgb(var(--border))]"
+                />
+                <span>
+                  <span className="text-[rgb(var(--dim))]">[선택]</span> 마케팅 정보 수신에 동의합니다
+                </span>
+              </label>
+            </div>
+
             <Button
-              variant="outline"
-              className="w-full border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] hover:bg-[rgb(var(--panel))] hover:text-[rgb(var(--green))]"
+              type="submit"
+              className="w-full bg-[rgb(var(--green))] text-[rgb(var(--bg))] hover:bg-[rgb(var(--green-dim))] font-bold"
+              size="lg"
             >
-              카카오로 가입하기
+              [ SIGN UP ]
             </Button>
-            <Button
-              variant="outline"
-              className="w-full border-[rgb(var(--border))] bg-[rgb(var(--bg))] text-[rgb(var(--text))] hover:bg-[rgb(var(--panel))] hover:text-[rgb(var(--green))]"
-            >
-              구글로 가입하기
-            </Button>
-          </div>
-        </CardContent>
+
+            {/* 구분선 */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-[rgb(var(--border))]" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-[rgb(var(--panel))] px-2 text-[rgb(var(--dim))]">
+                  소셜 가입 (준비중)
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </form>
 
         <CardFooter className="flex flex-col gap-2 border-t border-[rgb(var(--border))] pt-4">
           <p className="text-center text-sm text-[rgb(var(--text))]">
