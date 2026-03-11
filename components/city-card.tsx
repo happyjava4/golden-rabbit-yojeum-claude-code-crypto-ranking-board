@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { City } from "@/types/city";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 interface CityCardProps {
@@ -115,7 +117,7 @@ export function CityCard({ city }: CityCardProps) {
         </div>
 
         {/* 좋아요/싫어요 버튼 */}
-        <div className="flex items-center gap-3 border-t border-[rgb(var(--border))] pt-3">
+        <div className="flex flex-wrap items-center gap-3 border-t border-[rgb(var(--border))] pt-3">
           <button
             onClick={handleLikeClick}
             className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 ${
@@ -139,6 +141,15 @@ export function CityCard({ city }: CityCardProps) {
             <span className="text-lg">👎</span>
             <span>{currentDislikes}</span>
           </button>
+
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="ml-auto border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
+          >
+            <Link href={`/cities/${city.id}`}>상세 보기</Link>
+          </Button>
         </div>
       </div>
     </Card>
