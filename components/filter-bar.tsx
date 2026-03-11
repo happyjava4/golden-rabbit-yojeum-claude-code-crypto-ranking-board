@@ -48,7 +48,7 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               💰 예산
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               <Button
                 variant={selectedBudget === null ? "default" : "outline"}
                 size="sm"
@@ -84,7 +84,7 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               📍 지역
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               {regions.map((region) => (
                 <Button
                   key={region}
@@ -108,7 +108,7 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               🌿 환경 (복수 선택 가능)
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               {environments.map((env) => (
                 <Button
                   key={env}
@@ -132,7 +132,7 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               🌸 최고 계절
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               <Button
                 variant={selectedSeason === null ? "default" : "outline"}
                 size="sm"
