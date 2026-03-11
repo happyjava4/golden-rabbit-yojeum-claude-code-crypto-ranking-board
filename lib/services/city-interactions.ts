@@ -112,7 +112,6 @@ export async function getUserInteractionForCity(
 
   return data;
 }
-
 // 클라이언트 사이드 함수들
 
 /**
@@ -123,6 +122,7 @@ export async function toggleCityInteraction(
   cityId: number,
   type: 'like' | 'dislike'
 ): Promise<ToggleInteractionResponse> {
+
   const supabase = createClientClient();
 
   // 현재 사용자 확인
@@ -246,6 +246,7 @@ export async function getCityStatsClient(cityId: number): Promise<CityStats> {
 export async function getUserInteractionForCityClient(
   cityId: number
 ): Promise<CityInteraction | null> {
+
   const supabase = createClientClient();
 
   const { data: { user } } = await supabase.auth.getUser();

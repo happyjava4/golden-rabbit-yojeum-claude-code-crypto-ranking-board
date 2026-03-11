@@ -195,14 +195,25 @@ export function CityCard({ city }: CityCardProps) {
             </div>
           )}
 
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            className="w-full border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
-          >
-            <Link href={`/cities/${city.id}`}>상세 보기</Link>
-          </Button>
+          {/* 인증 상태 표시 */}
+          {!isAuthenticated && !isCheckingAuth && (
+            <div className="flex items-center justify-center gap-1 text-xs text-[rgb(var(--dim))] mb-3">
+              <HeartOff className="h-3 w-3" />
+              <span>로그인 필요</span>
+            </div>
+          )}
+
+          {/* 상세 보기 버튼 - 별도 줄 */}
+          <div className="flex justify-center">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
+            >
+              <Link href={`/cities/${city.id}`}>상세 보기</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </Card>
