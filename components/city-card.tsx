@@ -117,36 +117,38 @@ export function CityCard({ city }: CityCardProps) {
         </div>
 
         {/* 좋아요/싫어요 버튼 */}
-        <div className="flex flex-wrap items-center gap-3 border-t border-[rgb(var(--border))] pt-3">
-          <button
-            onClick={handleLikeClick}
-            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 ${
-              userVote === 'like'
-                ? 'bg-[rgb(var(--green))] text-black'
-                : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--green))]'
-            }`}
-          >
-            <span className="text-lg">👍</span>
-            <span>{currentLikes}</span>
-          </button>
-          
-          <button
-            onClick={handleDislikeClick}
-            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 ${
-              userVote === 'dislike'
-                ? 'bg-[rgb(var(--red))] text-white'
-                : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--red))]'
-            }`}
-          >
-            <span className="text-lg">👎</span>
-            <span>{currentDislikes}</span>
-          </button>
+        <div className="border-t border-[rgb(var(--border))] pt-3">
+          <div className="flex justify-between items-center mb-3">
+            <button
+              onClick={handleLikeClick}
+              className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 ${
+                userVote === 'like'
+                  ? 'bg-[rgb(var(--green))] text-black'
+                  : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--green))]'
+              }`}
+            >
+              <span className="text-lg">👍</span>
+              <span>{currentLikes}</span>
+            </button>
+
+            <button
+              onClick={handleDislikeClick}
+              className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 ${
+                userVote === 'dislike'
+                  ? 'bg-[rgb(var(--red))] text-white'
+                  : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--red))]'
+              }`}
+            >
+              <span>{currentDislikes}</span>
+              <span className="text-lg">👎</span>
+            </button>
+          </div>
 
           <Button
             asChild
             size="sm"
             variant="outline"
-            className="ml-auto border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
+            className="w-full border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
           >
             <Link href={`/cities/${city.id}`}>상세 보기</Link>
           </Button>
