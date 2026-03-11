@@ -139,71 +139,76 @@ export function CityCard({ city }: CityCardProps) {
         )}
 
         {/* 좋아요/싫어요 버튼 */}
-        <div className="flex flex-wrap items-center gap-3 border-t border-[rgb(var(--border))] pt-3">
-          <button
-            onClick={handleLikeClick}
-            disabled={isToggling || isCheckingAuth}
-            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
-              userInteraction?.interaction_type === 'like'
-                ? 'bg-[rgb(var(--green))] text-black'
-                : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--green))]'
-            }`}
-            title={!isAuthenticated ? '로그인이 필요합니다' : ''}
-          >
-            {isToggling && userInteraction?.interaction_type !== 'like' ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <span className="text-lg">👍</span>
-            )}
-            <span>
-              {isStatsLoading ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
+        <div className="border-t border-[rgb(var(--border))] pt-3">
+          <div className="flex justify-between items-center mb-3">
+            <button
+              onClick={handleLikeClick}
+              disabled={isToggling || isCheckingAuth}
+              className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+                userInteraction?.interaction_type === 'like'
+                  ? 'bg-[rgb(var(--green))] text-black'
+                  : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--green))]'
+              }`}
+              title={!isAuthenticated ? '로그인이 필요합니다' : ''}
+            >
+              {isToggling && userInteraction?.interaction_type !== 'like' ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                stats.likes
+                <span className="text-lg">👍</span>
               )}
-            </span>
-          </button>
+              <span>
+                {isStatsLoading ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  stats.likes
+                )}
+              </span>
+            </button>
 
-          <button
-            onClick={handleDislikeClick}
-            disabled={isToggling || isCheckingAuth}
-            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
-              userInteraction?.interaction_type === 'dislike'
-                ? 'bg-[rgb(var(--red))] text-white'
-                : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--red))]'
-            }`}
-            title={!isAuthenticated ? '로그인이 필요합니다' : ''}
-          >
-            {isToggling && userInteraction?.interaction_type !== 'dislike' ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <span className="text-lg">👎</span>
-            )}
-            <span>
-              {isStatsLoading ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
+            <button
+              onClick={handleDislikeClick}
+              disabled={isToggling || isCheckingAuth}
+              className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+                userInteraction?.interaction_type === 'dislike'
+                  ? 'bg-[rgb(var(--red))] text-white'
+                  : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--red))]'
+              }`}
+              title={!isAuthenticated ? '로그인이 필요합니다' : ''}
+            >
+              <span>
+                {isStatsLoading ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  stats.dislikes
+                )}
+              </span>
+              {isToggling && userInteraction?.interaction_type !== 'dislike' ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                stats.dislikes
+                <span className="text-lg">👎</span>
               )}
-            </span>
-          </button>
+            </button>
+          </div>
 
           {/* 인증 상태 표시 */}
           {!isAuthenticated && !isCheckingAuth && (
-            <div className="flex items-center gap-1 text-xs text-[rgb(var(--dim))]">
+            <div className="flex items-center justify-center gap-1 text-xs text-[rgb(var(--dim))] mb-3">
               <HeartOff className="h-3 w-3" />
               <span>로그인 필요</span>
             </div>
           )}
 
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            className="ml-auto border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
-          >
-            <Link href={`/cities/${city.id}`}>상세 보기</Link>
-          </Button>
+          {/* 상세 보기 버튼 - 별도 줄 */}
+          <div className="flex justify-center">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
+            >
+              <Link href={`/cities/${city.id}`}>상세 보기</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </Card>

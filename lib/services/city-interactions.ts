@@ -1,117 +1,16 @@
 /**
- * 도시 상호작용 API 서비스
+ * 도시 상호작용 API 서비스 (클라이언트 전용)
  * 좋아요/싫어요 시스템 관리
  */
 
-import { createClient as createServerClient } from '@/lib/supabase/server';
-import { createClient as createClientClient } from '@/lib/supabase/client';
+'use client';
+
+import { createClient } from '@/lib/supabase/client';
 import type {
   CityInteraction,
   CityStats,
-  ToggleInteractionResponse,
-  Database
+  ToggleInteractionResponse
 } from '@/types/database';
-
-// 서버 사이드 함수들
-
-/**
- * 도시별 좋아요/싫어요 통계 조회 (서버)
- */
-export async function getCityStats(cityId: number): Promise<CityStats | null> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_stats')
-    .select('*')
-    .eq('city_id', cityId)
-    .single();
-
-  if (error) {
-    console.error('Error fetching city stats:', error);
-    // 상호작용이 없는 경우 기본값 반환
-    if (error.code === 'PGRST116') {
-      return {
-        city_id: cityId,
-        likes: 0,
-        dislikes: 0,
-        total_interactions: 0
-      };
-    }
-    return null;
-  }
-
-  return data;
-}
-
-/**
- * 모든 도시의 통계를 한번에 조회 (서버)
- */
-export async function getAllCityStats(): Promise<Record<number, CityStats>> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_stats')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching all city stats:', error);
-    return {};
-  }
-
-  // cityId를 키로 하는 객체로 변환
-  return data.reduce((acc, stat) => {
-    acc[stat.city_id] = stat;
-    return acc;
-  }, {} as Record<number, CityStats>);
-}
-
-/**
- * 사용자의 모든 도시 상호작용 조회 (서버)
- */
-export async function getUserInteractions(userId: string): Promise<CityInteraction[]> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_interactions')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching user interactions:', error);
-    return [];
-  }
-
-  return data || [];
-}
-
-/**
- * 특정 도시에 대한 사용자 상호작용 조회 (서버)
- */
-export async function getUserInteractionForCity(
-  userId: string,
-  cityId: number
-): Promise<CityInteraction | null> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_interactions')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('city_id', cityId)
-    .single();
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      // 상호작용이 없는 경우
-      return null;
-    }
-    console.error('Error fetching user interaction for city:', error);
-    return null;
-  }
-
-  return data;
-}
 
 // 클라이언트 사이드 함수들
 
@@ -123,7 +22,7 @@ export async function toggleCityInteraction(
   cityId: number,
   type: 'like' | 'dislike'
 ): Promise<ToggleInteractionResponse> {
-  const supabase = createClientClient();
+  const supabase = createClient();
 
   // 현재 사용자 확인
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -219,7 +118,7 @@ export async function toggleCityInteraction(
  * 도시 통계 조회 (클라이언트)
  */
 export async function getCityStatsClient(cityId: number): Promise<CityStats> {
-  const supabase = createClientClient();
+  const supabase = createClient();
 
   const { data, error } = await supabase
     .from('city_stats')
@@ -246,7 +145,7 @@ export async function getCityStatsClient(cityId: number): Promise<CityStats> {
 export async function getUserInteractionForCityClient(
   cityId: number
 ): Promise<CityInteraction | null> {
-  const supabase = createClientClient();
+  const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -271,7 +170,7 @@ export async function getUserInteractionForCityClient(
 export async function getUserInteractionsForCities(
   cityIds: number[]
 ): Promise<Record<number, CityInteraction>> {
-  const supabase = createClientClient();
+  const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return {};
