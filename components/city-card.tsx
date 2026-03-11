@@ -139,7 +139,7 @@ export function CityCard({ city }: CityCardProps) {
         )}
 
         {/* 좋아요/싫어요 버튼 */}
-        <div className="flex flex-wrap items-center gap-3 border-t border-[rgb(var(--border))] pt-3">
+        <div className="flex items-center justify-between border-t border-[rgb(var(--border))] pt-3">
           <button
             onClick={handleLikeClick}
             disabled={isToggling || isCheckingAuth}
@@ -174,46 +174,20 @@ export function CityCard({ city }: CityCardProps) {
             }`}
             title={!isAuthenticated ? '로그인이 필요합니다' : ''}
           >
-            {isToggling && userInteraction?.interaction_type !== 'dislike' ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <span className="text-lg">👎</span>
-            )}
-            <span>
-              {isStatsLoading ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              ) : (
-                stats.dislikes
-              )}
-            </span>
+            <span>{currentDislikes}</span>
+            <span className="text-lg">👎</span>
           </button>
-          {/* 인증 상태 표시 */}
-          {!isAuthenticated && !isCheckingAuth && (
-            <div className="flex items-center gap-1 text-xs text-[rgb(var(--dim))]">
-              <HeartOff className="h-3 w-3" />
-              <span>로그인 필요</span>
-            </div>
-          )}
-
-          {/* 인증 상태 표시 */}
-          {!isAuthenticated && !isCheckingAuth && (
-            <div className="flex items-center justify-center gap-1 text-xs text-[rgb(var(--dim))] mb-3">
-              <HeartOff className="h-3 w-3" />
-              <span>로그인 필요</span>
-            </div>
-          )}
-
-          {/* 상세 보기 버튼 - 별도 줄 */}
-          <div className="flex justify-center">
-            <Button
-              asChild
-              size="sm"
-              variant="outline"
-              className="border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
-            >
-              <Link href={`/cities/${city.id}`}>상세 보기</Link>
-            </Button>
-          </div>
+        </div>
+        
+        <div className="mt-3">
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="w-full border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
+          >
+            <Link href={`/cities/${city.id}`}>상세 보기</Link>
+          </Button>
         </div>
       </div>
     </Card>

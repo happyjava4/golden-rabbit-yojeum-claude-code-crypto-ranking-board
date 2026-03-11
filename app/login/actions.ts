@@ -7,6 +7,13 @@ import { redirect } from 'next/navigation'
  * Login action - handles email/password authentication
  */
 export async function login(formData: FormData) {
+  // Supabase 환경 변수가 없으면 로그인을 우회합니다 (개발 환경용)
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    console.log('Supabase disabled - redirecting to home page')
+    redirect('/')
+    return
+  }
+
   const supabase = await createClient()
 
   const email = formData.get('email') as string

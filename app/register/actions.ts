@@ -7,6 +7,13 @@ import { redirect } from 'next/navigation'
  * Signup action - handles user registration with email/password
  */
 export async function signup(formData: FormData) {
+  // Supabase 환경 변수가 없으면 회원가입을 우회합니다 (개발 환경용)
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    console.log('Supabase disabled - redirecting to home page')
+    redirect('/')
+    return
+  }
+
   const supabase = await createClient()
 
   const name = formData.get('name') as string
