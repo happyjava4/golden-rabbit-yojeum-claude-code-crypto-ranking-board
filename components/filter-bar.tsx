@@ -53,11 +53,11 @@ export function FilterBar({
                 variant={selectedBudget === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => onBudgetChange(null)}
-                className={
+                className={`flex-1 ${
                   selectedBudget === null
                     ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                     : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                }
+                }`}
               >
                 전체
               </Button>
@@ -67,11 +67,11 @@ export function FilterBar({
                   variant={selectedBudget === budget ? "default" : "outline"}
                   size="sm"
                   onClick={() => onBudgetChange(budget)}
-                  className={
+                  className={`flex-1 ${
                     selectedBudget === budget
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {budget}
                 </Button>
@@ -91,11 +91,11 @@ export function FilterBar({
                   variant={selectedRegion === region ? "default" : "outline"}
                   size="sm"
                   onClick={() => onRegionChange(region)}
-                  className={
+                  className={`flex-1 ${
                     selectedRegion === region
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {region}
                 </Button>
@@ -115,11 +115,11 @@ export function FilterBar({
                   variant={selectedEnvironments.includes(env) ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleEnvironmentToggle(env)}
-                  className={
+                  className={`flex-1 ${
                     selectedEnvironments.includes(env)
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {env}
                 </Button>
@@ -137,11 +137,11 @@ export function FilterBar({
                 variant={selectedSeason === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => onSeasonChange(null)}
-                className={
+                className={`flex-1 ${
                   selectedSeason === null
                     ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                     : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                }
+                }`}
               >
                 전체
               </Button>
@@ -151,11 +151,11 @@ export function FilterBar({
                   variant={selectedSeason === season ? "default" : "outline"}
                   size="sm"
                   onClick={() => onSeasonChange(season)}
-                  className={
+                  className={`flex-1 ${
                     selectedSeason === season
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {season}
                 </Button>

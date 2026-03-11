@@ -8,12 +8,12 @@ describe('App Page Component', () => {
   describe('Page Rendering', () => {
     it('should render without crashing', () => {
       render(<Page />);
-      expect(screen.getByText('암호화폐 순위')).toBeInTheDocument();
+      expect(screen.getByText('워케이션 코리아')).toBeInTheDocument();
     });
 
-    it('should render the CryptoRankingBoard component', () => {
+    it('should render the main navigation and hero section', () => {
       render(<Page />);
-      const title = screen.getByText('암호화폐 순위');
+      const title = screen.getByText('워케이션 코리아');
       expect(title).toBeInTheDocument();
     });
 
@@ -24,23 +24,23 @@ describe('App Page Component', () => {
   });
 
   describe('Component Integration', () => {
-    it('should render all cryptocurrency data', () => {
+    it('should render city data', () => {
       render(<Page />);
-      expect(screen.getByText('비트코인')).toBeInTheDocument();
-      expect(screen.getByText('이더리움')).toBeInTheDocument();
-      expect(screen.getByText('테더')).toBeInTheDocument();
+      expect(screen.getByText('제주시')).toBeInTheDocument();
+      expect(screen.getByText('부산')).toBeInTheDocument();
+      expect(screen.getByText('강릉')).toBeInTheDocument();
     });
 
-    it('should render table headers', () => {
+    it('should render navigation elements', () => {
       render(<Page />);
-      expect(screen.getByText('순위')).toBeInTheDocument();
-      expect(screen.getByText('이름')).toBeInTheDocument();
-      expect(screen.getByText('가격')).toBeInTheDocument();
+      expect(screen.getByText('로그인')).toBeInTheDocument();
+      expect(screen.getByText('무료 가입')).toBeInTheDocument();
     });
 
     it('should render footer information', () => {
       render(<Page />);
-      expect(screen.getByText(/데이터는 60초마다 업데이트됩니다/)).toBeInTheDocument();
+      expect(screen.getByText(/Digital Nomads/)).toBeInTheDocument();
+      expect(screen.getByText(/© 2026/)).toBeInTheDocument();
     });
   });
 
@@ -51,10 +51,10 @@ describe('App Page Component', () => {
       expect(mainContainer).toBeInTheDocument();
     });
 
-    it('should maintain dark theme styling', () => {
+    it('should have main navigation structure', () => {
       const { container } = render(<Page />);
-      const darkBg = container.querySelector('.bg-gray-950');
-      expect(darkBg).toBeInTheDocument();
+      const nav = container.querySelector('nav');
+      expect(nav).toBeInTheDocument();
     });
   });
 
@@ -64,7 +64,7 @@ describe('App Page Component', () => {
     });
 
     it('should have a name', () => {
-      expect(Page.name).toBe('Page');
+      expect(Page.name).toBe('Home');
     });
   });
 });
