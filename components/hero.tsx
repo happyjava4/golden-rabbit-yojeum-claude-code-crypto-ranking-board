@@ -3,6 +3,7 @@ import { cities, getTotalLikes } from "@/lib/data/cities";
 export function Hero() {
   const totalCities = cities.length;
   const totalLikes = getTotalLikes();
+  const totalRegions = 7;
 
   return (
     <section className="relative border-b border-[rgb(var(--border))] bg-gradient-to-b from-[rgb(var(--bg))] to-[rgb(var(--panel))] py-16 md:py-24">
@@ -53,7 +54,7 @@ export function Hero() {
             <span className="text-[rgb(var(--amber))]">👍 {totalLikes}개 좋아요</span>
           </div>
           <div className="rounded border border-[rgb(var(--border))] bg-[rgb(var(--panel))] px-4 py-2">
-            <span className="text-[rgb(var(--green))]">👥 커뮤니티 무료</span>
+            <span className="text-[rgb(var(--green))]">�️ 지역 {totalRegions}곳</span>
           </div>
         </div>
       </div>

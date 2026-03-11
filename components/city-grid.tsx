@@ -42,7 +42,7 @@ export function CityGrid({ cities }: CityGridProps) {
       result = result.filter((city) => city.bestSeason === selectedSeason);
     }
 
-    return result;
+    return result.sort((a, b) => b.likes - a.likes);
   }, [cities, selectedBudget, selectedRegion, selectedEnvironments, selectedSeason]);
 
   return (
