@@ -1,55 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { City } from "@/types/city";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useRealtimeCityStats, useToggleCityInteraction } from "@/lib/hooks/useRealtimeCityStats";
+import { createClient } from "@/lib/supabase/client";
+import { Loader2, Heart, HeartOff } from "lucide-react";
 
 interface CityCardProps {
   city: City;
 }
 
 export function CityCard({ city }: CityCardProps) {
-  // 좋아요/싫어요 상태 관리
-  const [userVote, setUserVote] = useState<'like' | 'dislike' | null>(null);
-  const [currentLikes, setCurrentLikes] = useState(city.likes);
-  const [currentDislikes, setCurrentDislikes] = useState(city.dislikes);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // 실시간 도시 통계와 사용자 상호작용
+  const { stats, userInteraction, isLoading: isStatsLoading, error: statsError } = useRealtimeCityStats(city.id);
+
+  // 좋아요/싫어요 토글 액션
+  const { toggle, isToggling, error: toggleError } = useToggleCityInteraction();
+
+  const supabase = createClient();
+
+  // 인증 상태 확인
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+      setIsCheckingAuth(false);
+    };
+
+    checkAuth();
+
+    // 인증 상태 변경 구독
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   // 좋아요 버튼 클릭 핸들러
-  const handleLikeClick = () => {
-    if (userVote === 'like') {
-      // 이미 좋아요 → 투표 취소
-      setUserVote(null);
-      setCurrentLikes(prev => prev - 1);
-    } else if (userVote === 'dislike') {
-      // 싫어요 → 좋아요로 변경
-      setUserVote('like');
-      setCurrentLikes(prev => prev + 1);
-      setCurrentDislikes(prev => prev - 1);
-    } else {
-      // 미투표 → 좋아요
-      setUserVote('like');
-      setCurrentLikes(prev => prev + 1);
+  const handleLikeClick = async () => {
+    if (!isAuthenticated) {
+      // 로그인 페이지로 리디렉션
+      window.location.href = '/login';
+      return;
     }
+
+    await toggle(city.id, 'like');
   };
 
   // 싫어요 버튼 클릭 핸들러
-  const handleDislikeClick = () => {
-    if (userVote === 'dislike') {
-      // 이미 싫어요 → 투표 취소
-      setUserVote(null);
-      setCurrentDislikes(prev => prev - 1);
-    } else if (userVote === 'like') {
-      // 좋아요 → 싫어요로 변경
-      setUserVote('dislike');
-      setCurrentDislikes(prev => prev + 1);
-      setCurrentLikes(prev => prev - 1);
-    } else {
-      // 미투표 → 싫어요
-      setUserVote('dislike');
-      setCurrentDislikes(prev => prev + 1);
+  const handleDislikeClick = async () => {
+    if (!isAuthenticated) {
+      // 로그인 페이지로 리디렉션
+      window.location.href = '/login';
+      return;
     }
+
+    await toggle(city.id, 'dislike');
   };
 
   return (
@@ -116,31 +131,70 @@ export function CityCard({ city }: CityCardProps) {
           </div>
         </div>
 
+        {/* 에러 메시지 */}
+        {(statsError || toggleError) && (
+          <div className="mb-4 rounded bg-[rgb(var(--red))]/20 p-2 text-sm text-[rgb(var(--red))]">
+            {statsError || toggleError}
+          </div>
+        )}
+
         {/* 좋아요/싫어요 버튼 */}
         <div className="flex flex-wrap items-center gap-3 border-t border-[rgb(var(--border))] pt-3">
           <button
             onClick={handleLikeClick}
-            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 ${
-              userVote === 'like'
+            disabled={isToggling || isCheckingAuth}
+            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+              userInteraction?.interaction_type === 'like'
                 ? 'bg-[rgb(var(--green))] text-black'
                 : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--green))]'
             }`}
+            title={!isAuthenticated ? '로그인이 필요합니다' : ''}
           >
-            <span className="text-lg">👍</span>
-            <span>{currentLikes}</span>
+            {isToggling && userInteraction?.interaction_type !== 'like' ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span className="text-lg">👍</span>
+            )}
+            <span>
+              {isStatsLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                stats.likes
+              )}
+            </span>
           </button>
-          
+
           <button
             onClick={handleDislikeClick}
-            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 ${
-              userVote === 'dislike'
+            disabled={isToggling || isCheckingAuth}
+            className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+              userInteraction?.interaction_type === 'dislike'
                 ? 'bg-[rgb(var(--red))] text-white'
                 : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--red))]'
             }`}
+            title={!isAuthenticated ? '로그인이 필요합니다' : ''}
           >
-            <span className="text-lg">👎</span>
-            <span>{currentDislikes}</span>
+            {isToggling && userInteraction?.interaction_type !== 'dislike' ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span className="text-lg">👎</span>
+            )}
+            <span>
+              {isStatsLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                stats.dislikes
+              )}
+            </span>
           </button>
+
+          {/* 인증 상태 표시 */}
+          {!isAuthenticated && !isCheckingAuth && (
+            <div className="flex items-center gap-1 text-xs text-[rgb(var(--dim))]">
+              <HeartOff className="h-3 w-3" />
+              <span>로그인 필요</span>
+            </div>
+          )}
 
           <Button
             asChild
