@@ -187,7 +187,6 @@ export function CityCard({ city }: CityCardProps) {
               )}
             </span>
           </button>
-
           {/* 인증 상태 표시 */}
           {!isAuthenticated && !isCheckingAuth && (
             <div className="flex items-center gap-1 text-xs text-[rgb(var(--dim))]">
@@ -200,7 +199,7 @@ export function CityCard({ city }: CityCardProps) {
             asChild
             size="sm"
             variant="outline"
-            className="ml-auto border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
+            className="w-full border-[rgb(var(--border))] text-[rgb(var(--text))] hover:border-[rgb(var(--green))] hover:text-[rgb(var(--green))]"
           >
             <Link href={`/cities/${city.id}`}>상세 보기</Link>
           </Button>
