@@ -48,16 +48,16 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               💰 예산
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               <Button
                 variant={selectedBudget === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => onBudgetChange(null)}
-                className={
+                className={`flex-1 ${
                   selectedBudget === null
                     ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                     : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                }
+                }`}
               >
                 전체
               </Button>
@@ -67,11 +67,11 @@ export function FilterBar({
                   variant={selectedBudget === budget ? "default" : "outline"}
                   size="sm"
                   onClick={() => onBudgetChange(budget)}
-                  className={
+                  className={`flex-1 ${
                     selectedBudget === budget
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {budget}
                 </Button>
@@ -84,18 +84,18 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               📍 지역
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               {regions.map((region) => (
                 <Button
                   key={region}
                   variant={selectedRegion === region ? "default" : "outline"}
                   size="sm"
                   onClick={() => onRegionChange(region)}
-                  className={
+                  className={`flex-1 ${
                     selectedRegion === region
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {region}
                 </Button>
@@ -108,18 +108,18 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               🌿 환경 (복수 선택 가능)
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               {environments.map((env) => (
                 <Button
                   key={env}
                   variant={selectedEnvironments.includes(env) ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleEnvironmentToggle(env)}
-                  className={
+                  className={`flex-1 ${
                     selectedEnvironments.includes(env)
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {env}
                 </Button>
@@ -132,16 +132,16 @@ export function FilterBar({
             <h3 className="mb-2 text-sm font-mono text-[rgb(var(--text-secondary))]">
               🌸 최고 계절
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               <Button
                 variant={selectedSeason === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => onSeasonChange(null)}
-                className={
+                className={`flex-1 ${
                   selectedSeason === null
                     ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                     : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                }
+                }`}
               >
                 전체
               </Button>
@@ -151,11 +151,11 @@ export function FilterBar({
                   variant={selectedSeason === season ? "default" : "outline"}
                   size="sm"
                   onClick={() => onSeasonChange(season)}
-                  className={
+                  className={`flex-1 ${
                     selectedSeason === season
                       ? "bg-[rgb(var(--accent))] text-black hover:bg-[rgb(var(--accent))]/90"
                       : "border-[rgb(var(--border))] text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--accent))]/20"
-                  }
+                  }`}
                 >
                   {season}
                 </Button>
