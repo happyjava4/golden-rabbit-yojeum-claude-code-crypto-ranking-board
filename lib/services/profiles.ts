@@ -128,6 +128,10 @@ export async function getRecommendedCities(userId: string): Promise<City[]> {
 export async function getCurrentUserProfileClient(): Promise<Profile | null> {
   const supabase = createClientClient();
 
+  if (!supabase) {
+    return null;
+  }
+
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -156,6 +160,11 @@ export async function getCurrentUserProfileClient(): Promise<Profile | null> {
  */
 export async function updateProfile(profileData: ProfileUpdateRequest): Promise<Profile | null> {
   const supabase = createClientClient();
+
+  if (!supabase) {
+    console.error('Supabase client not available');
+    return null;
+  }
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -189,6 +198,11 @@ export async function updateProfile(profileData: ProfileUpdateRequest): Promise<
  */
 export async function createProfile(profileData: Partial<Profile>): Promise<Profile | null> {
   const supabase = createClientClient();
+
+  if (!supabase) {
+    console.error('Supabase client not available');
+    return null;
+  }
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 

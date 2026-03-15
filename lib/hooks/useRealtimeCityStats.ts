@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getCityStatsClient, getUserInteractionForCityClient } from '@/lib/services/city-interactions';
 import type { CityStats, CityInteraction } from '@/types/database';
@@ -33,7 +33,7 @@ export function useRealtimeCityStats(cityId: number): UseRealtimeCityStatsReturn
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   // 데이터 페칭 함수
@@ -66,6 +66,12 @@ export function useRealtimeCityStats(cityId: number): UseRealtimeCityStatsReturn
   };
 
   useEffect(() => {
+    if (!supabase) {
+      setIsLoading(false);
+      setError('Supabase 설정이 없어 데이터를 불러올 수 없습니다.');
+      return;
+    }
+
     // 초기 데이터 로드
     fetchData();
 
@@ -107,7 +113,7 @@ export function useRealtimeCityStats(cityId: number): UseRealtimeCityStatsReturn
         channelRef.current = null;
       }
     };
-  }, [cityId]);
+  }, [cityId, supabase]);
 
   return {
     stats,
@@ -135,10 +141,18 @@ export function useRealtimeAllCityStats(cityIds: number[]): UseRealtimeAllCitySt
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   const fetchAllData = async () => {
+    const activeSupabase = supabase;
+
+    if (!activeSupabase) {
+      setIsLoading(false);
+      setError('Supabase 설정이 없어 데이터를 불러올 수 없습니다.');
+      return;
+    }
+
     try {
       setError(null);
 
@@ -155,11 +169,11 @@ export function useRealtimeAllCityStats(cityIds: number[]): UseRealtimeAllCitySt
       }, {} as Record<number, CityStats>);
 
       // 사용자 상호작용 조회
-      const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await activeSupabase.auth.getUser();
       let newUserInteractions: Record<number, CityInteraction> = {};
 
       if (user) {
-        const { data: interactions } = await supabase
+        const { data: interactions } = await activeSupabase
           .from('city_interactions')
           .select('*')
           .eq('user_id', user.id)
@@ -187,11 +201,19 @@ export function useRealtimeAllCityStats(cityIds: number[]): UseRealtimeAllCitySt
       return;
     }
 
-    // 초기 데이터 로드
-    fetchAllData();
+    if (!supabase) {
+      setIsLoading(false);
+      setError('Supabase 설정이 없어 데이터를 불러올 수 없습니다.');
+      return;
+    }
+
+  const activeSupabase = supabase;
+
+  // 초기 데이터 로드
+  fetchAllData();
 
     // 모든 도시에 대한 Realtime 구독
-    channelRef.current = supabase
+    channelRef.current = activeSupabase
       .channel('all_city_interactions')
       .on(
         'postgres_changes',
@@ -215,7 +237,7 @@ export function useRealtimeAllCityStats(cityIds: number[]): UseRealtimeAllCitySt
               }));
 
               // 현재 사용자의 상호작용이 변경되었는지 확인
-              const { data: { user } } = await supabase.auth.getUser();
+              const { data: { user } } = await activeSupabase.auth.getUser();
               if (user && payload.new && (payload.new as any).user_id === user.id) {
                 if (payload.eventType === 'DELETE') {
                   setUserInteractions(prev => {
@@ -241,11 +263,11 @@ export function useRealtimeAllCityStats(cityIds: number[]): UseRealtimeAllCitySt
     // cleanup
     return () => {
       if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
+  activeSupabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
     };
-  }, [cityIds]);
+  }, [cityIds, supabase]);
 
   return {
     allStats,

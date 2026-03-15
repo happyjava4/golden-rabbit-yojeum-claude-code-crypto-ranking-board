@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { City } from "@/types/city";
 import { Button } from "@/components/ui/button";
@@ -34,10 +34,16 @@ export function CityCard({ city }: CityCardProps) {
   // 좋아요/싫어요 토글 액션
   const { toggle, isToggling, error: toggleError } = useToggleCityInteraction();
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   // 인증 상태 확인
   useEffect(() => {
+    if (!supabase) {
+      setIsAuthenticated(false);
+      setIsCheckingAuth(false);
+      return;
+    }
+
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setIsAuthenticated(!!user);

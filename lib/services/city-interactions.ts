@@ -22,6 +22,14 @@ export async function toggleCityInteraction(
 ): Promise<ToggleInteractionResponse> {
   const supabase = createClient();
 
+  if (!supabase) {
+    return {
+      success: false,
+      interaction: null,
+      stats: { city_id: cityId, likes: 0, dislikes: 0, total_interactions: 0 }
+    };
+  }
+
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -133,6 +141,15 @@ export async function toggleCityInteraction(
 export async function getCityStatsClient(cityId: number): Promise<CityStats> {
   const supabase = createClient();
 
+  if (!supabase) {
+    return {
+      city_id: cityId,
+      likes: 0,
+      dislikes: 0,
+      total_interactions: 0
+    };
+  }
+
   // Debug 로그는 필요 시에만 사용
   // console.debug('[getCityStatsClient] Fetching stats for cityId:', cityId);
 
@@ -166,6 +183,10 @@ export async function getUserInteractionForCityClient(
   cityId: number
 ): Promise<CityInteraction | null> {
   const supabase = createClient();
+
+  if (!supabase) {
+    return null;
+  }
 
   const { data: { user } } = await supabase.auth.getUser();
   // console.debug('[getUserInteractionForCityClient] cityId:', cityId, 'user:', user?.id);
@@ -201,6 +222,10 @@ export async function getUserInteractionsForCities(
   cityIds: number[]
 ): Promise<Record<number, CityInteraction>> {
   const supabase = createClient();
+
+  if (!supabase) {
+    return {};
+  }
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return {};
