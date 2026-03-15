@@ -1,6 +1,5 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 /**
@@ -14,7 +13,15 @@ export async function signup(formData: FormData) {
     return
   }
 
-  const supabase = await createClient()
+  let supabase
+  try {
+    const { createClient } = await import('@/lib/supabase/server')
+    supabase = await createClient()
+  } catch (error) {
+    console.warn('Supabase client unavailable in signup action:', error)
+    redirect('/')
+    return
+  }
 
   const name = formData.get('name') as string
   const email = formData.get('email') as string

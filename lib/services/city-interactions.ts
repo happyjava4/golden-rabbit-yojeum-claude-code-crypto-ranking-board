@@ -1,118 +1,16 @@
 /**
- * 도시 상호작용 API 서비스
- * 좋아요/싫어요 시스템 관리
+ * 도시 상호작용 클라이언트 API 서비스
+ * Client Components 전용
  */
 
-import { createClient as createServerClient } from '@/lib/supabase/server';
-import { createClient as createClientClient } from '@/lib/supabase/client';
+'use client';
+
+import { createClient } from '@/lib/supabase/client';
 import type {
   CityInteraction,
   CityStats,
   ToggleInteractionResponse,
-  Database
 } from '@/types/database';
-
-// 서버 사이드 함수들
-
-/**
- * 도시별 좋아요/싫어요 통계 조회 (서버)
- */
-export async function getCityStats(cityId: number): Promise<CityStats | null> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_stats')
-    .select('*')
-    .eq('city_id', cityId)
-    .single();
-
-  if (error) {
-    console.error('Error fetching city stats:', error);
-    // 상호작용이 없는 경우 기본값 반환
-    if (error.code === 'PGRST116') {
-      return {
-        city_id: cityId,
-        likes: 0,
-        dislikes: 0,
-        total_interactions: 0
-      };
-    }
-    return null;
-  }
-
-  return data;
-}
-
-/**
- * 모든 도시의 통계를 한번에 조회 (서버)
- */
-export async function getAllCityStats(): Promise<Record<number, CityStats>> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_stats')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching all city stats:', error);
-    return {};
-  }
-
-  // cityId를 키로 하는 객체로 변환
-  return data.reduce((acc, stat) => {
-    acc[stat.city_id] = stat;
-    return acc;
-  }, {} as Record<number, CityStats>);
-}
-
-/**
- * 사용자의 모든 도시 상호작용 조회 (서버)
- */
-export async function getUserInteractions(userId: string): Promise<CityInteraction[]> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_interactions')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching user interactions:', error);
-    return [];
-  }
-
-  return data || [];
-}
-
-/**
- * 특정 도시에 대한 사용자 상호작용 조회 (서버)
- */
-export async function getUserInteractionForCity(
-  userId: string,
-  cityId: number
-): Promise<CityInteraction | null> {
-  const supabase = await createServerClient();
-
-  const { data, error } = await supabase
-    .from('city_interactions')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('city_id', cityId)
-    .single();
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      // 상호작용이 없는 경우
-      return null;
-    }
-    console.error('Error fetching user interaction for city:', error);
-    return null;
-  }
-
-  return data;
-}
-// 클라이언트 사이드 함수들
 
 /**
  * 좋아요/싫어요 토글 (클라이언트)
@@ -122,10 +20,8 @@ export async function toggleCityInteraction(
   cityId: number,
   type: 'like' | 'dislike'
 ): Promise<ToggleInteractionResponse> {
+  const supabase = createClient();
 
-  const supabase = createClientClient();
-
-  // 현재 사용자 확인
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -137,28 +33,37 @@ export async function toggleCityInteraction(
   }
 
   try {
-    // 기존 상호작용 조회
-    const { data: existingInteraction } = await supabase
+    console.log('[toggleCityInteraction] Starting - cityId:', cityId, 'type:', type, 'userId:', user.id);
+
+    const { data: existingInteraction, error: queryError } = await supabase
       .from('city_interactions')
       .select('*')
       .eq('user_id', user.id)
       .eq('city_id', cityId)
       .single();
 
+    console.log('[toggleCityInteraction] Existing interaction query result:', { existingInteraction, queryError });
+
     let newInteraction: CityInteraction | null = null;
 
     if (existingInteraction) {
+      console.log('[toggleCityInteraction] Found existing interaction:', existingInteraction);
+
       if (existingInteraction.interaction_type === type) {
-        // 같은 타입이면 삭제 (토글 off)
+        console.log('[toggleCityInteraction] Same type - deleting interaction');
         const { error: deleteError } = await supabase
           .from('city_interactions')
           .delete()
           .eq('id', existingInteraction.id);
 
-        if (deleteError) throw deleteError;
+        if (deleteError) {
+          console.error('[toggleCityInteraction] Delete error:', deleteError);
+          throw deleteError;
+        }
+        console.log('[toggleCityInteraction] Successfully deleted');
 
       } else {
-        // 다른 타입이면 업데이트
+        console.log('[toggleCityInteraction] Different type - updating interaction');
         const { data: updatedData, error: updateError } = await supabase
           .from('city_interactions')
           .update({ interaction_type: type })
@@ -166,11 +71,15 @@ export async function toggleCityInteraction(
           .select()
           .single();
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error('[toggleCityInteraction] Update error:', updateError);
+          throw updateError;
+        }
+        console.log('[toggleCityInteraction] Successfully updated:', updatedData);
         newInteraction = updatedData;
       }
     } else {
-      // 상호작용이 없으면 새로 생성
+      console.log('[toggleCityInteraction] No existing interaction - inserting new');
       const { data: insertedData, error: insertError } = await supabase
         .from('city_interactions')
         .insert({
@@ -181,11 +90,14 @@ export async function toggleCityInteraction(
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('[toggleCityInteraction] Insert error:', insertError);
+        throw insertError;
+      }
+      console.log('[toggleCityInteraction] Successfully inserted:', insertedData);
       newInteraction = insertedData;
     }
 
-    // 최신 통계 조회
     const { data: statsData } = await supabase
       .from('city_stats')
       .select('*')
@@ -219,7 +131,10 @@ export async function toggleCityInteraction(
  * 도시 통계 조회 (클라이언트)
  */
 export async function getCityStatsClient(cityId: number): Promise<CityStats> {
-  const supabase = createClientClient();
+  const supabase = createClient();
+
+  // Debug 로그는 필요 시에만 사용
+  // console.debug('[getCityStatsClient] Fetching stats for cityId:', cityId);
 
   const { data, error } = await supabase
     .from('city_stats')
@@ -227,8 +142,12 @@ export async function getCityStatsClient(cityId: number): Promise<CityStats> {
     .eq('city_id', cityId)
     .single();
 
+  // console.debug('[getCityStatsClient] Query result:', { data, error });
+
   if (error) {
-    // 상호작용이 없는 경우 기본값 반환
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      console.warn('[getCityStatsClient] Error, returning zeros:', error);
+    }
     return {
       city_id: cityId,
       likes: 0,
@@ -246,21 +165,30 @@ export async function getCityStatsClient(cityId: number): Promise<CityStats> {
 export async function getUserInteractionForCityClient(
   cityId: number
 ): Promise<CityInteraction | null> {
-
-  const supabase = createClientClient();
+  const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  // console.debug('[getUserInteractionForCityClient] cityId:', cityId, 'user:', user?.id);
+
+  if (!user) {
+    // console.debug('[getUserInteractionForCityClient] No user, returning null');
+    return null;
+  }
 
   const { data, error } = await supabase
     .from('city_interactions')
     .select('*')
     .eq('user_id', user.id)
     .eq('city_id', cityId)
-    .single();
+    .maybeSingle();
 
+  // console.debug('[getUserInteractionForCityClient] Query result:', { data, error });
+
+  // PGRST116은 데이터 없음을 의미하므로 정상
   if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching user interaction:', error);
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      console.warn('[getUserInteractionForCityClient] Error fetching user interaction:', error);
+    }
   }
 
   return data || null;
@@ -272,7 +200,7 @@ export async function getUserInteractionForCityClient(
 export async function getUserInteractionsForCities(
   cityIds: number[]
 ): Promise<Record<number, CityInteraction>> {
-  const supabase = createClientClient();
+  const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return {};
@@ -288,7 +216,6 @@ export async function getUserInteractionsForCities(
     return {};
   }
 
-  // cityId를 키로 하는 객체로 변환
   return (data || []).reduce((acc, interaction) => {
     acc[interaction.city_id] = interaction;
     return acc;

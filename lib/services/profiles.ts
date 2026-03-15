@@ -3,7 +3,6 @@
  * 프로필 관리 및 맞춤 추천 시스템
  */
 
-import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient as createClientClient } from '@/lib/supabase/client';
 import { cities } from '@/lib/data/cities';
 import type { Profile, ProfileUpdateRequest } from '@/types/database';
@@ -11,11 +10,25 @@ import type { City } from '@/types/city';
 
 // 서버 사이드 함수들
 
+async function getServerClient() {
+  try {
+    const { createClient } = await import('@/lib/supabase/server');
+    return await createClient();
+  } catch (error) {
+    console.warn('Supabase server client unavailable:', error);
+    return null;
+  }
+}
+
 /**
  * 사용자 프로필 조회 (서버)
  */
 export async function getProfile(userId: string): Promise<Profile | null> {
-  const supabase = await createServerClient();
+  const supabase = await getServerClient();
+
+  if (!supabase) {
+    return null;
+  }
 
   const { data, error } = await supabase
     .from('profiles')
@@ -39,7 +52,11 @@ export async function getProfile(userId: string): Promise<Profile | null> {
  * 현재 로그인한 사용자의 프로필 조회 (서버)
  */
 export async function getCurrentUserProfile(): Promise<Profile | null> {
-  const supabase = await createServerClient();
+  const supabase = await getServerClient();
+
+  if (!supabase) {
+    return null;
+  }
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 

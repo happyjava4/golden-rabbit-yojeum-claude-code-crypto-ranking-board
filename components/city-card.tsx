@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useRealtimeCityStats, useToggleCityInteraction } from "@/lib/hooks/useRealtimeCityStats";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, Heart, HeartOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface CityCardProps {
   city: City;
@@ -18,7 +18,18 @@ export function CityCard({ city }: CityCardProps) {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // 실시간 도시 통계와 사용자 상호작용
-  const { stats, userInteraction, isLoading: isStatsLoading, error: statsError } = useRealtimeCityStats(city.id);
+  const {
+    stats,
+    userInteraction,
+    isLoading: isStatsLoading,
+    error: statsError,
+    refetch: refetchStats,
+  } = useRealtimeCityStats(city.id);
+
+  const [optimisticStats, setOptimisticStats] = useState(stats);
+  const [optimisticInteractionType, setOptimisticInteractionType] = useState<
+    'like' | 'dislike' | null
+  >(userInteraction?.interaction_type ?? null);
 
   // 좋아요/싫어요 토글 액션
   const { toggle, isToggling, error: toggleError } = useToggleCityInteraction();
@@ -45,6 +56,56 @@ export function CityCard({ city }: CityCardProps) {
     };
   }, [supabase]);
 
+  useEffect(() => {
+    setOptimisticStats(stats);
+  }, [stats.city_id, stats.likes, stats.dislikes, stats.total_interactions]);
+
+  useEffect(() => {
+    setOptimisticInteractionType(userInteraction?.interaction_type ?? null);
+  }, [userInteraction?.interaction_type]);
+
+  const applyOptimisticUpdate = (
+    nextType: 'like' | 'dislike' | null,
+    prevType: 'like' | 'dislike' | null
+  ) => {
+    setOptimisticStats((prev) => {
+      let likes = prev.likes;
+      let dislikes = prev.dislikes;
+      let total = prev.total_interactions;
+
+      if (prevType === nextType) {
+        return prev;
+      }
+
+      if (nextType === 'like') {
+        likes = prevType === 'like' ? Math.max(0, likes - 1) : likes + 1;
+        total = prevType === 'like' ? Math.max(0, total - 1) : total + 1;
+      }
+
+      if (nextType === 'dislike') {
+        dislikes = prevType === 'dislike' ? Math.max(0, dislikes - 1) : dislikes + 1;
+        total = prevType === 'dislike' ? Math.max(0, total - 1) : total + 1;
+      }
+
+      if (nextType === null && prevType === 'like') {
+        likes = Math.max(0, likes - 1);
+        total = Math.max(0, total - 1);
+      }
+
+      if (nextType === null && prevType === 'dislike') {
+        dislikes = Math.max(0, dislikes - 1);
+        total = Math.max(0, total - 1);
+      }
+
+      return {
+        ...prev,
+        likes,
+        dislikes,
+        total_interactions: total,
+      };
+    });
+  };
+
   // 좋아요 버튼 클릭 핸들러
   const handleLikeClick = async () => {
     if (!isAuthenticated) {
@@ -53,7 +114,24 @@ export function CityCard({ city }: CityCardProps) {
       return;
     }
 
-    await toggle(city.id, 'like');
+    if (isToggling) {
+      console.log('[handleLikeClick] Already toggling, skipping');
+      return;
+    }
+
+    const previousType = optimisticInteractionType;
+    const nextType = previousType === 'like' ? null : 'like';
+    setOptimisticInteractionType(nextType);
+    applyOptimisticUpdate(nextType, previousType);
+
+    console.log('[handleLikeClick] Toggling like for city', city.id);
+    const success = await toggle(city.id, 'like');
+    if (success) {
+      await refetchStats();
+    } else {
+      setOptimisticInteractionType(previousType);
+      applyOptimisticUpdate(previousType, nextType);
+    }
   };
 
   // 싫어요 버튼 클릭 핸들러
@@ -64,7 +142,24 @@ export function CityCard({ city }: CityCardProps) {
       return;
     }
 
-    await toggle(city.id, 'dislike');
+    if (isToggling) {
+      console.log('[handleDislikeClick] Already toggling, skipping');
+      return;
+    }
+
+    const previousType = optimisticInteractionType;
+    const nextType = previousType === 'dislike' ? null : 'dislike';
+    setOptimisticInteractionType(nextType);
+    applyOptimisticUpdate(nextType, previousType);
+
+    console.log('[handleDislikeClick] Toggling dislike for city', city.id);
+    const success = await toggle(city.id, 'dislike');
+    if (success) {
+      await refetchStats();
+    } else {
+      setOptimisticInteractionType(previousType);
+      applyOptimisticUpdate(previousType, nextType);
+    }
   };
 
   return (
@@ -144,13 +239,13 @@ export function CityCard({ city }: CityCardProps) {
             onClick={handleLikeClick}
             disabled={isToggling || isCheckingAuth}
             className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
-              userInteraction?.interaction_type === 'like'
+              optimisticInteractionType === 'like'
                 ? 'bg-[rgb(var(--green))] text-black'
                 : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--green))]'
             }`}
             title={!isAuthenticated ? '로그인이 필요합니다' : ''}
           >
-            {isToggling && userInteraction?.interaction_type !== 'like' ? (
+            {isToggling && optimisticInteractionType !== 'like' ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <span className="text-lg">👍</span>
@@ -159,7 +254,7 @@ export function CityCard({ city }: CityCardProps) {
               {isStatsLoading ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                stats.likes
+                optimisticStats.likes
               )}
             </span>
           </button>
@@ -168,14 +263,24 @@ export function CityCard({ city }: CityCardProps) {
             onClick={handleDislikeClick}
             disabled={isToggling || isCheckingAuth}
             className={`flex items-center gap-2 rounded px-3 py-2 font-mono text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
-              userInteraction?.interaction_type === 'dislike'
+              optimisticInteractionType === 'dislike'
                 ? 'bg-[rgb(var(--red))] text-white'
                 : 'bg-[rgb(var(--bg))] text-[rgb(var(--dim))] hover:text-[rgb(var(--red))]'
             }`}
             title={!isAuthenticated ? '로그인이 필요합니다' : ''}
           >
-            <span>{currentDislikes}</span>
-            <span className="text-lg">👎</span>
+            {isToggling && optimisticInteractionType !== 'dislike' ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span className="text-lg">👎</span>
+            )}
+            <span>
+              {isStatsLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                optimisticStats.dislikes
+              )}
+            </span>
           </button>
         </div>
         

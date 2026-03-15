@@ -119,11 +119,11 @@ export interface Database {
     };
     Functions: {
       get_comment_count: {
-        Args: { target_city_id: number };
+        Args: { p_city_id: number };
         Returns: number;
       };
       get_reply_count: {
-        Args: { target_comment_id: string };
+        Args: { p_comment_id: string };
         Returns: number;
       };
     };

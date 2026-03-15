@@ -74,25 +74,57 @@ interface CoinData {
 ## 테스트 인프라
 
 Jest 및 React Testing Library가 완전히 설정되어 있음:
+
 - **설정**: TypeScript 지원 및 경로 매핑이 포함된 `jest.config.mjs`
 - **셋업**: 테스트 환경 설정을 위한 `jest.setup.js`
 - **커버리지**: `.next/`, `node_modules/`, 설정 파일 제외하도록 구성됨
 - **테스트 패턴**: `**/__tests__/**/*` 및 `**/*.{spec,test}.*`
 
+### E2E 테스트 (Playwright)
+
+Playwright 기반 E2E 테스트 구조가 준비되어 있음:
+
+```text
+e2e/
+  tests/
+    smoke/
+    auth/
+    city/
+    interactions/
+    navigation/
+  fixtures/
+  helpers/
+  config/
+  setup/
+playwright.config.ts
+```
+
+- **테스트 루트**: `e2e/tests`
+- **설정 파일**: `playwright.config.ts` (baseURL 기본 `http://localhost:3000`)
+- **스크립트**:
+
+  - `pnpm test:e2e`
+  - `pnpm test:e2e:ui`
+
 ## 주요 구현 세부사항
 
 ### 숫자 포맷팅 전략
+
 모든 숫자 표시를 처리하는 두 가지 유틸리티 함수:
+
 - `formatNumber()`: 시가총액/거래량을 위해 큰 숫자를 K/M/B/T 표기법으로 변환
 - `formatPrice()`: 적절한 소수점 자리수로 가격 포맷팅 (< $1일 때 4자리 소수점)
 
 ### 반응형 디자인 패턴
+
 점진적 개선을 위한 Tailwind의 반응형 접두사 사용:
+
 - 기본: 순위, 이름, 가격, 24시간 변동률 (항상 표시)
 - `md:` 브레이크포인트: + 시가총액
 - `lg:` 브레이크포인트: + 24시간 거래량
 
 ### 자산 관리
+
 암호화폐 로고는 `/public/coin/`에 혼합 형식(.png, .webp)으로 저장되어 체계적인 접근보다는 유기적인 자산 수집을 나타냄.
 
 ## 개발 고려사항
@@ -105,6 +137,7 @@ Jest 및 React Testing Library가 완전히 설정되어 있음:
 ## 상태 관리
 
 현재 상태 없음 - 모든 데이터가 정적입니다. 향후 API 통합에는 다음이 필요할 가능성:
+
 - 데이터 페칭 훅 또는 서버 컴포넌트
 - 로딩/에러 상태
 - 실시간 업데이트 메커니즘 (WebSocket/폴링)

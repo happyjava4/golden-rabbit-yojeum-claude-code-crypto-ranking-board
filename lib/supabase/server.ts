@@ -1,16 +1,22 @@
+import "server-only";
 import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 
 /**
  * Create a Supabase client for Server Components, Server Actions, and Route Handlers
  * Uses cookies for authentication state management
  */
 export async function createClient() {
+  // Supabase 환경 변수가 없으면 에러 방지
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error('Supabase environment variables are not configured');
+  }
+
+  const { cookies } = await import('next/headers')
   const cookieStore = await cookies()
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
